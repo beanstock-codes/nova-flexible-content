@@ -1,52 +1,28 @@
 {
     "name": "whitecube/nova-flexible-content",
     "description": "Flexible Content & Repeater Fields for Laravel Nova.",
-    "license": "MIT",
     "keywords": [
-        "laravel",
-        "nova",
         "field",
         "flexible",
-        "repeat",
         "group",
-        "layout"
+        "laravel",
+        "layout",
+        "nova",
+        "repeat"
     ],
-    "authors": [
-        {
-            "name": "Toon Van den Bos",
-            "email": "toon@whitecube.be"
-        }
-    ],
+    "license": "MIT",
     "require": {
-        "php": "^8.1",
+        "php": "^7.3|^8.0",
         "ext-json": "*",
-        "laravel/nova": "^5.0"
-    },
-    "require-dev": {
-        "laravel/nova-devtool": "^1.1.5",
-        "laravel/pint": "^1.2",
-        "phpunit/phpunit": "^9.6",
-        "psalm/plugin-laravel": "^2.0"
+        "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "laravel/nova": "^4.0",
+        "nova-kit/nova-packages-tool": "^1.3.1"
     },
     "autoload": {
         "psr-4": {
             "Whitecube\\NovaFlexibleContent\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://nova.laravel.com"
-        }
-    ],
     "extra": {
         "laravel": {
             "providers": [
@@ -58,26 +34,5 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "scripts": {
-        "psalm": "psalm --find-unused-psalm-suppress --output-format=phpstorm",
-        "psalm-update-baseline": "psalm --set-baseline=psalm-baseline.xml",
-        "test": "phpunit --colors=always tests",
-        "fix-style": "./vendor/bin/pint",
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/pint --ansi"
-        ]
-    }
+    "prefer-stable": true
 }

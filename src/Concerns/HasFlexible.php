@@ -53,7 +53,7 @@ trait HasFlexible
         $flexible = $this->getFlexibleArrayFromValue($value);
 
         if (is_null($flexible)) {
-            return new Collection();
+            return new Collection;
         }
 
         return new Collection(
@@ -89,8 +89,6 @@ trait HasFlexible
     /**
      * Map array with Flexible Content Layouts
      *
-     * @param  array  $flexible
-     * @param  array  $layoutMapping
      * @return array
      */
     protected function getMappedFlexibleLayouts(array $flexible, array $layoutMapping)
@@ -104,7 +102,6 @@ trait HasFlexible
      * Transform given layout value into a usable Layout instance
      *
      * @param  mixed  $item
-     * @param  array  $layoutMapping
      * @return null|\Whitecube\NovaFlexibleContent\Layouts\LayoutInterface
      */
     protected function getMappedLayout($item, array $layoutMapping)
@@ -144,7 +141,6 @@ trait HasFlexible
      * @param  string  $name
      * @param  string  $key
      * @param  array  $attributes
-     * @param  array  $layoutMapping
      * @return \Whitecube\NovaFlexibleContent\Layouts\LayoutInterface
      */
     protected function createMappedLayout($name, $key, $attributes, array $layoutMapping)

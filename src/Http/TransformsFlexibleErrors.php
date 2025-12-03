@@ -13,19 +13,17 @@ trait TransformsFlexibleErrors
     /**
      * Checks whether the given response's flexible errors can and should be transformed
      *
-     * @param  \Symfony\Component\HttpFoundation\Response  $response
      * @return bool
      */
     protected function shouldTransformFlexibleErrors(Response $response)
     {
-        return  $response->getStatusCode() === Response::HTTP_UNPROCESSABLE_ENTITY
-                && is_a($response, JsonResponse::class);
+        return $response->getStatusCode() === Response::HTTP_UNPROCESSABLE_ENTITY
+            && is_a($response, JsonResponse::class);
     }
 
     /**
      * Updates given response's errors for the concerned flexible fields
      *
-     * @param  Response  $response
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function transformFlexibleErrors(Response $response)
