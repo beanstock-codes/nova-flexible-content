@@ -11,14 +11,14 @@ $multiselect-placeholder-color: #7c858e;
 @import "./colors";
 
 .nova-flexible-content-sortable-ghost {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .nova-flexible-content-sortable-drag {
-  background-color: rgba(var(--colors-gray-100),var(--tw-bg-opacity));
-  border-radius: 10px;
+    background-color: rgba(var(--colors-gray-100), var(--tw-bg-opacity));
+    border-radius: 10px;
 }
 
 .dark .nova-flexible-content-sortable-drag {
-  background-color: rgba(var(--colors-gray-900),var(--tw-bg-opacity));
+    background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
 }

@@ -16,19 +16,17 @@ trait ParsesFlexibleAttributes
     /**
      * Check if given request should be handled by the middleware
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     protected function requestHasParsableFlexibleInputs(Request $request)
     {
         return in_array($request->method(), ['POST', 'PUT']) &&
-                is_string($request->input(FlexibleAttribute::REGISTER));
+            is_string($request->input(FlexibleAttribute::REGISTER));
     }
 
     /**
      * Transform the request's flexible values
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     protected function getParsedFlexibleInputs(Request $request)
