@@ -3,12 +3,12 @@
 namespace Whitecube\NovaFlexibleContent\Layouts;
 
 use ArrayAccess;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use JsonSerializable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\FieldCollection;
@@ -25,11 +25,11 @@ use Whitecube\NovaFlexibleContent\Http\ScopedRequest;
  * @implements \ArrayAccess<TKey, TValue>
  * @implements \Illuminate\Contracts\Support\Arrayable<TKey, TValue>
  */
-class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterface
+class Layout implements LayoutInterface, JsonSerializable, ArrayAccess, Arrayable
 {
     use HasAttributes;
-    use HasFlexible;
     use HidesAttributes;
+    use HasFlexible;
 
     /**
      * The layout's name
@@ -134,10 +134,11 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
      * @param  array  $fields
      * @param  string  $key
      * @param  array  $attributes
+     * @param  callable|null  $removeCallbackMethod
      * @param  int|null  $limit
      * @return void
      */
-    public function __construct($title = null, $name = null, $fields = null, $key = null, $attributes = [], ?callable $removeCallbackMethod = null)
+    public function __construct($title = null, $name = null, $fields = null, $key = null, $attributes = [], callable $removeCallbackMethod = null)
     {
         $this->title = $title ?? $this->title();
         $this->name = $name ?? $this->name();
@@ -268,6 +269,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
      * Get a cloned instance with set values
      *
      * @param  string  $key
+     * @param  array  $attributes
      * @return Layout
      */
     public function duplicateAndHydrate($key, array $attributes = [])
@@ -295,6 +297,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * Create a working field clone instance
      *
+     * @param  \Laravel\Nova\Fields\Field  $original
      * @return \Laravel\Nova\Fields\Field
      */
     protected function cloneField(Field $original)
@@ -329,6 +332,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * Resolve fields for display using given attributes.
      *
+     * @param  array  $attributes
      * @return array
      */
     public function resolveForDisplay(array $attributes = [])
@@ -342,6 +346,9 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
 
     /**
      * Filter the layout's fields for detail view
+     *
+     * @param  NovaRequest  $request
+     * @param $resource
      */
     public function filterForDetail(NovaRequest $request, $resource)
     {
@@ -377,11 +384,12 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * Fill attributes using underlaying fields and incoming request
      *
+     * @param  ScopedRequest  $request
      * @return array
      */
     public function fill(ScopedRequest $request)
     {
-        return $this->fields->map(function ($field) use ($request) {
+        return  $this->fields->map(function ($field) use ($request) {
             return $field->fill($request, $this);
         })
             ->filter(function ($callback) {
@@ -394,6 +402,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * Force Fill the layout with an array of attributes.
      *
+     * @param  array  $attributes
      * @return $this
      */
     public function forceFill(array $attributes)
@@ -409,13 +418,14 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * Get validation rules for fields concerned by given request
      *
+     * @param  ScopedRequest  $request
      * @param  string  $specificty
      * @param  string  $key
      * @return array
      */
     public function generateRules(ScopedRequest $request, $specificty, $key)
     {
-        return $this->fields->map(function ($field) use ($request, $specificty, $key) {
+        return  $this->fields->map(function ($field) use ($request, $specificty, $key) {
             return $this->getScopedFieldRules($field, $request, $specificty, $key);
         })
             ->collapse()
@@ -426,6 +436,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
      * Get validation rules for fields concerned by given request
      *
      * @param  \Laravel\Nova\Fields\Field  $field
+     * @param  ScopedRequest  $request
      * @param  null|string  $specificty
      * @param  string  $key
      * @return array
@@ -436,7 +447,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
 
         $rules = call_user_func([$field, $method], $request);
 
-        return collect($rules)->mapWithKeys(function ($validatorRules, $attribute) use ($key, $field, $request) {
+        return collect($rules)->mapWithKeys(function($validatorRules, $attribute) use ($key, $field, $request) {
             $key = $request->isFileAttribute($attribute)
                 ? $request->getFileAttribute($attribute)
                 : $key.'.attributes.'.$attribute;
@@ -448,6 +459,7 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * The method to call when this layout is removed
      *
+     * @param  Flexible  $flexible
      * @return mixed
      */
     public function fireRemoveCallback(Flexible $flexible)
@@ -462,15 +474,19 @@ class Layout implements Arrayable, ArrayAccess, JsonSerializable, LayoutInterfac
     /**
      * The default behaviour when removed
      *
+     * @param  Flexible  $flexible
      * @param  \Whitecube\NovaFlexibleContent\Layout  $layout
      * @return mixed
      */
-    protected function removeCallback(Flexible $flexible, $layout) {}
+    protected function removeCallback(Flexible $flexible, $layout)
+    {
+    }
 
     /**
      * Wrap the rules in an array containing field information for later use
      *
      * @param  \Laravel\Nova\Fields\Field  $field
+     * @param  array  $rules
      * @return null|array
      */
     protected function wrapScopedFieldRules($field, array $rules)

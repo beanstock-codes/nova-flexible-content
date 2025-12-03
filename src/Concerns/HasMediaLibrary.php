@@ -20,6 +20,8 @@ trait HasMediaLibrary
 
     /**
      * Return the underlying model implementing the HasMedia interface
+     *
+     * @return \Spatie\MediaLibrary\HasMedia
      */
     protected function getUnderlyingMediaModel(): HasMedia
     {
@@ -40,6 +42,7 @@ trait HasMediaLibrary
      * Add a file to the medialibrary.
      *
      * @param  string|\Symfony\Component\HttpFoundation\File\UploadedFile  $file
+     * @return \Spatie\MediaLibrary\MediaCollections\FileAdder
      */
     public function addMedia($file): \Spatie\MediaLibrary\MediaCollections\FileAdder
     {
@@ -65,7 +68,7 @@ trait HasMediaLibrary
             'media-library.media_downloader',
             DefaultDownloader::class
         );
-        $temporaryFile = (new $downloader)->getTempFile($url);
+        $temporaryFile = (new $downloader())->getTempFile($url);
         $this->guardAgainstInvalidMimeType($temporaryFile, $allowedMimeTypes);
 
         $filename = basename(parse_url($url, PHP_URL_PATH));
@@ -90,7 +93,9 @@ trait HasMediaLibrary
     /**
      * Get media collection by its collectionName.
      *
+     * @param  string  $collectionName
      * @param  array|callable  $filters
+     * @return \Illuminate\Support\Collection
      */
     public function getMedia(string $collectionName = 'default', $filters = []): Collection
     {
@@ -111,6 +116,7 @@ trait HasMediaLibrary
     /**
      * Resolve fields for display using given attributes.
      *
+     * @param  array  $attributes
      * @return array
      */
     public function resolveForDisplay(array $attributes = [])
@@ -130,6 +136,7 @@ trait HasMediaLibrary
      * The default behaviour when removed
      * Should remove all related medias except if shouldDeletePreservingMedia returns true
      *
+     * @param  Flexible  $flexible
      * @param  Layout  $layout
      * @return mixed
      */

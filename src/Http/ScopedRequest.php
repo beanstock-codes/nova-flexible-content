@@ -23,6 +23,7 @@ class ScopedRequest extends NovaRequest
     /**
      * Create a copy of the given request, only containing the group's input
      *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $from
      * @param  array  $attributes
      * @param  string  $group
      * @return \Whitecube\NovaFlexibleContent\Http\ScopedRequest
@@ -136,7 +137,7 @@ class ScopedRequest extends NovaRequest
     {
         $attributes = collect($files)->keyBy('original');
 
-        $this->fileAttributes = $attributes->mapWithKeys(function ($attribute, $key) {
+        $this->fileAttributes = $attributes->mapWithKeys(function($attribute, $key) {
             return [$attribute->name => $key];
         });
 
@@ -165,7 +166,7 @@ class ScopedRequest extends NovaRequest
      *
      * @return array
      */
-    protected function getFlattenedFiles($iterable = null, ?FlexibleAttribute $original = null)
+    protected function getFlattenedFiles($iterable = null, FlexibleAttribute $original = null)
     {
         $files = [];
 
@@ -198,7 +199,7 @@ class ScopedRequest extends NovaRequest
             return false;
         }
 
-        return in_array('layout', $keys, true)
+        return  in_array('layout', $keys, true)
             && in_array('key', $keys, true)
             && in_array('attributes', $keys, true);
     }

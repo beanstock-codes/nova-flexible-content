@@ -35,14 +35,14 @@ export default class Group {
             files: {}
         };
 
-        for (var item of this.values()) {
-            if (item[0].indexOf('___upload-') == 0) {
+        for(var item of this.values()) {
+            if(item[0].indexOf('___upload-') == 0) {
                 // Previously nested file attribute
                 data.files[item[0]] = item[1];
                 continue;
             }
 
-            if (!(item[1] instanceof File || item[1] instanceof Blob)) {
+            if(!(item[1] instanceof File || item[1] instanceof Blob)) {
                 // Simple input value, no need to attach files
                 data.attributes[item[0]] = item[1];
                 continue;
@@ -68,7 +68,7 @@ export default class Group {
         var randomString = '';
         for (var i = 0; i < len - 1; i++) {
             var randomPoz = Math.floor(Math.random() * charSet.length);
-            randomString += charSet.substring(randomPoz, randomPoz + 1);
+            randomString += charSet.substring(randomPoz,randomPoz+1);
         }
         return 'c' + randomString;
     }

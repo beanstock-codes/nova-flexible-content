@@ -1,16 +1,22 @@
 {
     "name": "whitecube/nova-flexible-content",
     "description": "Flexible Content & Repeater Fields for Laravel Nova.",
+    "license": "MIT",
     "keywords": [
+        "laravel",
+        "nova",
         "field",
         "flexible",
+        "repeat",
         "group",
-        "laravel",
-        "layout",
-        "nova",
-        "repeat"
+        "layout"
     ],
-    "license": "MIT",
+    "authors": [
+        {
+            "name": "Toon Van den Bos",
+            "email": "toon@whitecube.be"
+        }
+    ],
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
@@ -23,6 +29,17 @@
             "Whitecube\\NovaFlexibleContent\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
     "extra": {
         "laravel": {
             "providers": [
@@ -34,5 +51,16 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "laravel/pint": "^1.2",
+        "phpunit/phpunit": "^9.5",
+        "psalm/plugin-laravel": "^2.0"
+    },
+    "scripts": {
+        "psalm": "psalm --find-unused-psalm-suppress --output-format=phpstorm",
+        "psalm-update-baseline": "psalm --set-baseline=psalm-baseline.xml",
+        "test": "phpunit --colors=always tests",
+        "fix-style": "./vendor/bin/pint"
+    }
 }
