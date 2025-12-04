@@ -101,7 +101,8 @@ export default {
       groups: {},
       files: {},
       sortableInstance: null,
-      nestedFieldListeners: {}
+      nestedFieldListeners: {},
+      currentNestedFieldsValue: {},
     };
   },
   mounted() {
@@ -236,7 +237,13 @@ export default {
                     });
                   }
                 }
-                this.emitFieldValueChange(this.currentField.attribute, flexibleData);
+                // Check if value actually changed to prevent infinite loops
+                const newValue = JSON.stringify(flexibleData);
+                const oldValue = JSON.stringify(this.currentNestedFieldsValue);
+                if (newValue !== oldValue) {
+                  this.emitFieldValueChange(this.currentField.attribute, flexibleData);
+                  this.currentNestedFieldsValue = flexibleData;
+                }
               });
             };
             // Store listener for cleanup
