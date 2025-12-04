@@ -77,14 +77,19 @@ export default class Group {
      * Assign a new unique field name to each field
      */
     renameFields() {
+        // Collect original field names in this group
+        const groupFieldNames = new Set(this.fields.map(f => f.attribute));
+
         for (var i = this.fields.length - 1; i >= 0; i--) {
             this.fields[i].attribute = this.key + '__' + this.fields[i].attribute;
             this.fields[i].validationKey = this.fields[i].attribute;
 
             if (this.fields[i].dependsOn) {
                 Object.keys(this.fields[i].dependsOn).forEach(key => {
-                    this.fields[i].dependsOn[`${this.key}__${key}`] = this.fields[i].dependsOn[key];
-                    delete this.fields[i].dependsOn[key];
+                    if (groupFieldNames.has(key)) {
+                        this.fields[i].dependsOn[`${this.key}__${key}`] = this.fields[i].dependsOn[key];
+                        delete this.fields[i].dependsOn[key];
+                    }
                 });
             }
         }

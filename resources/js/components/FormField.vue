@@ -14,6 +14,7 @@
             :dusk="currentField.attribute + '-' + index"
             :key="group.key"
             :field="currentField"
+            :sync-endpoint="syncEndpoint"
             :group="group"
             :index="index"
             :resource-name="resourceName"

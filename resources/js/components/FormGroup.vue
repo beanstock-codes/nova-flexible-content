@@ -81,6 +81,7 @@
                     :resource-name="resourceName"
                     :resource-id="resourceId"
                     :field="item"
+                    :sync-endpoint="syncEndpoint"
                     :errors="errors"
                     :mode="mode"
                     :show-help-text="item.helpText != null"
@@ -103,6 +104,7 @@ export default {
         group: {},
         index: {},
         field: {},
+        syncEndpoint: { type: String, required: false },
         ...mapProps(['mode'])
     },
 
