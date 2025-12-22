@@ -83,12 +83,18 @@ class InterceptFlexibleDependsOnAttributes
     protected function hasFlexibleFieldNames(Request $request): bool
     {
         $fields = $this->getNovaRequestFields($request);
+
         $jsonKeys = $request->json() ? $request->json()->keys() : [];
         $inputFields = array_filter(array_merge($jsonKeys, [$request->get('field')]));
 
         foreach ($inputFields as $inputField) {
-            $matchedField = $this->findFieldByAttribute($fields, $inputField);
-            if ($matchedField instanceof Flexible) {
+            if (! $this->hasGroupPrefix($inputField)) {
+                continue;
+            }
+            $newAttribute = $this->stripGroupPrefix($inputField);
+            $matchedField = $this->findFieldByAttribute($fields, $newAttribute);
+
+            if ($matchedField) {
                 return true;
             }
         }
@@ -276,6 +282,20 @@ class InterceptFlexibleDependsOnAttributes
     }
 
     /**
+     * Check if a field name has the flexible group prefix pattern.
+     *
+     * @param  string  $fieldName
+     * @return bool
+     */
+    protected function hasGroupPrefix(string $fieldName): bool
+    {
+        $separator = preg_quote(FlexibleAttribute::GROUP_SEPARATOR, '/');
+        $pattern = '/^c[A-Za-z0-9]{15}' . $separator . '(.+)$/';
+
+        return preg_match($pattern, $fieldName) === 1;
+    }
+
+    /**
      * Strip the flexible group prefix from a field name.
      * Only strips if the field name matches the flexible field pattern: c[A-Za-z0-9]{15}__field_name
      *
@@ -284,16 +304,17 @@ class InterceptFlexibleDependsOnAttributes
      */
     protected function stripGroupPrefix(string $fieldName): string
     {
-        // Validate that this matches the flexible field naming pattern
+        if (!$this->hasGroupPrefix($fieldName)) {
+            return $fieldName;
+        }
+
+        // Extract the field name without the group prefix
         $separator = preg_quote(FlexibleAttribute::GROUP_SEPARATOR, '/');
         $pattern = '/^c[A-Za-z0-9]{15}' . $separator . '(.+)$/';
 
-        if (preg_match($pattern, $fieldName, $matches) === 1) {
-            // Return just the field name without the group prefix
-            return $matches[1];
-        }
+        preg_match($pattern, $fieldName, $matches);
 
-        // Not a flexible field pattern, return as-is
-        return $fieldName;
+        // Return just the field name without the group prefix
+        return $matches[1];
     }
 }
