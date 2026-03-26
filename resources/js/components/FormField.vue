@@ -103,12 +103,15 @@ export default {
       sortableInstance: null,
       nestedFieldListeners: {},
       currentNestedFieldsValue: {},
+      externalFieldValues: {},
+      externalFieldListeners: {},
     };
   },
   mounted() {
     // Set up listeners after initial setup
     this.$nextTick(() => {
       this.setupNestedFieldListeners();
+      this.setupExternalFieldListeners();
     });
   },
   beforeUnmount() {
@@ -117,6 +120,7 @@ export default {
     }
     // Clean up nested field listeners
     this.cleanupNestedFieldListeners();
+    this.cleanupExternalFieldListeners();
   },
 
   methods: {
@@ -264,6 +268,49 @@ export default {
       this.nestedFieldListeners = {};
     },
 
+    getExternalDependsOnKeys() {
+      const externalKeys = new Set();
+      if (!this.layouts) return externalKeys;
+
+      this.layouts.forEach(layout => {
+        const layoutFieldNames = new Set(layout.fields.map(f => f.attribute));
+        layout.fields.forEach(field => {
+          if (field.dependsOn) {
+            Object.keys(field.dependsOn).forEach(key => {
+              if (!layoutFieldNames.has(key)) {
+                externalKeys.add(key);
+              }
+            });
+          }
+        });
+      });
+
+      return externalKeys;
+    },
+
+    setupExternalFieldListeners() {
+      this.cleanupExternalFieldListeners();
+
+      const externalKeys = this.getExternalDependsOnKeys();
+
+      externalKeys.forEach(key => {
+        const eventName = `${key}-change`;
+        const listener = (value) => {
+          this.externalFieldValues[key] = value;
+        };
+
+        this.externalFieldListeners[eventName] = listener;
+        Nova.$on(eventName, listener);
+      });
+    },
+
+    cleanupExternalFieldListeners() {
+      Object.keys(this.externalFieldListeners).forEach(eventName => {
+        Nova.$off(eventName, this.externalFieldListeners[eventName]);
+      });
+      this.externalFieldListeners = {};
+    },
+
     /**
      * Clean field attribute names by removing the group key prefix
      * and convert array-like attributes to proper JSON arrays
@@ -344,6 +391,16 @@ export default {
             }
           }
           this.emitFieldValueChange(this.currentField.attribute, flexibleData);
+
+          // Re-emit cached external field values so newly mounted
+          // dependent fields receive the current top-level values
+          this.$nextTick(() => {
+            Object.keys(this.externalFieldValues).forEach(key => {
+              if (this.externalFieldValues[key] !== undefined) {
+                Nova.$emit(`${key}-change`, this.externalFieldValues[key]);
+              }
+            });
+          });
         });
       }
     },
