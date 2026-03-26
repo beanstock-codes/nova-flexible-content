@@ -250,7 +250,7 @@ class Flexible extends Field
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolve($resource, ?string $attribute = null): void
+    public function resolve($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -268,7 +268,7 @@ class Flexible extends Field
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolveForDisplay($resource, ?string $attribute = null): void
+    public function resolveForDisplay($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
